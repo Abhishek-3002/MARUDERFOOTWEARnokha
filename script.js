@@ -48,6 +48,15 @@ extraProducts.forEach((p,n)=>{
  card.innerHTML='<div class="product-image"><span class="product-tag">'+brand.toUpperCase()+'</span><span class="discount-tag">'+Math.round((mrp-price)/mrp*100)+'% OFF</span><img src="'+img+'" alt="'+name+'" loading="lazy" onerror="this.src=\'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900\'"><span class="image-index">'+String(n+7).padStart(2,"0")+' / 36</span></div><div class="product-info"><div class="product-title"><h3>'+name+'</h3><p>'+(type==="chappal"?"Slides · Sandals":"Everyday · Sport")+'</p></div><div class="price-block"><strong>₹'+price.toLocaleString("en-IN")+'</strong><del>₹'+mrp.toLocaleString("en-IN")+' MRP</del><small>You save ₹'+(mrp-price).toLocaleString("en-IN")+'</small></div></div><div class="product-buy"><label>'+(type==="chappal"?"Size":"UK size")+'<select class="size-select" aria-label="Select size"><option value="">Choose size</option>'+sizeOptions.map(s=>'<option>'+s+'</option>').join("")+'</select></label><button class="add-btn" data-id="'+id+'" data-name="'+name+'" data-price="'+price+'" data-mrp="'+mrp+'" data-image="'+img+'">Add to cart <span>＋</span></button></div>';
  grid.appendChild(card);
 });
+function refreshProductPriceLabels(){
+ document.querySelectorAll(".product-card").forEach(card=>{
+  const btn=card.querySelector(".add-btn"),price=Number(btn?.dataset.price),mrp=Number(btn?.dataset.mrp);
+  if(!btn||!Number.isFinite(price)||!Number.isFinite(mrp)||price<=0||mrp<price)return;
+  const pct=Math.round((mrp-price)/mrp*100);
+  const tag=card.querySelector(".discount-tag");if(tag)tag.textContent=pct>0?pct+"% OFF":"SPECIAL PRICE";
+  const block=card.querySelector(".price-block");if(block)block.innerHTML="<strong>"+money(price)+"</strong><del>"+money(mrp)+" MRP</del><small>You save "+money(mrp-price)+"</small>";
+ });
+}
 const filters=[...document.querySelectorAll(".filter")];
 filters.forEach(btn=>btn.addEventListener("click",()=>{
  filters.forEach(x=>x.classList.remove("active"));btn.classList.add("active");
@@ -67,7 +76,7 @@ modeButtons.forEach(btn=>btn.addEventListener("click",()=>{orderMode=btn.dataset
 const SERVICE_CITIES=["nokha","bikaner","nagaur","dungargarh","bajju"];
 let cart=[];try{const saved=JSON.parse(localStorage.getItem("maruderCart")||"[]");cart=Array.isArray(saved)?saved.filter(item=>item&&typeof item.id==="string"&&typeof item.name==="string"&&Number.isFinite(Number(item.price))&&Number(item.price)>0&&Number.isFinite(Number(item.qty))&&Number(item.qty)>0&&String(item.size||"")).map(item=>({...item,price:Number(item.price),mrp:Number(item.mrp)||Number(item.price),qty:Math.min(99,Math.floor(Number(item.qty)))})):[]}catch{cart=[]}
 const money=n=>"₹"+Number(n).toLocaleString("en-IN");
-function save(){localStorage.setItem("maruderCart",JSON.stringify(cart));renderCart()}
+function save(){try{localStorage.setItem("maruderCart",JSON.stringify(cart))}catch(error){console.warn("Cart could not be saved on this browser",error)}renderCart()}
 function openCart(){drawer.classList.add("open");backdrop.classList.add("open");drawer.setAttribute("aria-hidden","false");document.body.style.overflow="hidden"}
 function closeCart(){drawer.classList.remove("open");backdrop.classList.remove("open");drawer.setAttribute("aria-hidden","true");document.body.style.overflow=""}
 document.getElementById("openCart").addEventListener("click",openCart);
@@ -91,7 +100,8 @@ function renderCart(){
  itemsEl.innerHTML=cart.map((item,n)=>{
   const itemMrp=Number(item.mrp)||item.price;
   const image=item.img||"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=240";
-  return '<div class="cart-row"><img class="cart-thumb" src="'+escapeHTML(image)+'" alt="'+escapeHTML(item.name)+'"><div class="cart-product-details"><h3>'+escapeHTML(item.name)+'</h3><p>UK '+escapeHTML(item.size)+' · '+money(item.price)+' each <del>'+money(itemMrp)+'</del></p><div class="cart-row-actions"><button class="qty-btn" data-action="minus" data-index="'+n+'" aria-label="Decrease quantity">−</button><b>'+item.qty+'</b><button class="qty-btn" data-action="plus" data-index="'+n+'" aria-label="Increase quantity">＋</button><button class="remove-btn" data-action="remove" data-index="'+n+'">Remove</button></div></div><strong>'+money(item.price*item.qty)+'<small class="cart-line-saving">Save '+money((itemMrp-item.price)*item.qty)+'</small></strong></div>';
+  const pct=itemMrp>0?Math.round((itemMrp-item.price)/itemMrp*100):0;
+  return '<div class="cart-row"><img class="cart-thumb" src="'+escapeHTML(image)+'" alt="'+escapeHTML(item.name)+'"><div class="cart-product-details"><h3>'+escapeHTML(item.name)+'</h3><p>UK '+escapeHTML(item.size)+' · Offer '+money(item.price)+' <del>'+money(itemMrp)+' MRP</del></p><small class="cart-discount">'+pct+'% OFF · You save '+money((itemMrp-item.price)*item.qty)+'</small><div class="cart-row-actions"><button class="qty-btn" data-action="minus" data-index="'+n+'" aria-label="Decrease quantity">−</button><b>'+item.qty+'</b><button class="qty-btn" data-action="plus" data-index="'+n+'" aria-label="Increase quantity">＋</button><button class="remove-btn" data-action="remove" data-index="'+n+'">Remove</button></div></div><strong>'+money(item.price*item.qty)+'</strong></div>';
  }).join("");
  itemsEl.querySelectorAll("[data-action]").forEach(button=>button.addEventListener("click",()=>{
   const n=Number(button.dataset.index),action=button.dataset.action;
@@ -139,12 +149,13 @@ deliveryForm.addEventListener("submit",e=>{
  const cityOK=orderMode==="pickup"||SERVICE_CITIES.includes(city.toLowerCase());
  if(!name||!/^[6-9]\d{9}$/.test(phone)||!address||!cityOK||!/^[0-9]{6}$/.test(pin)||!accepted){toast("Please check details and accept store policies");updateDeliveryStatus();return}
  const orderId=createOrderId();
- const lines=cart.map(i=>"• "+i.name+" | Size "+i.size+" | Qty "+i.qty+" | "+money(i.price*i.qty)).join("\n");
+ const lines=cart.map(i=>"• "+i.name+" | Size "+i.size+" | Qty "+i.qty+" | MRP "+money((Number(i.mrp)||i.price)*i.qty)+" | Offer "+money(i.price*i.qty)+" | Save "+money(((Number(i.mrp)||i.price)-i.price)*i.qty)).join("\n");
  const total=cart.reduce((s,i)=>s+i.price*i.qty,0),mrpTotal=cart.reduce((s,i)=>s+(Number(i.mrp)||i.price)*i.qty,0);
  const fulfilment=orderMode==="pickup"?"STORE PICKUP":"HOME DELIVERY";
  const msg="Namaste MARUDER Shoes Store! Mujhe ye order place karna hai.\n\nORDER ID: "+orderId+"\nORDER TYPE: "+fulfilment+"\n\nCUSTOMER DETAILS\nName: "+name+"\nMobile: "+phone+"\nAddress / Pickup note: "+address+"\nCity: "+city+"\nPIN Code: "+pin+"\n\n"+(orderMode==="pickup"?"PICKUP LOCATION\n"+STORE_ADDRESS+"\nPlease confirm when the order is ready.\n":"DELIVERY AREA\nPlease confirm PIN-level serviceability and expected delivery date.\n")+"\nORDER ITEMS\n"+lines+"\n\nMRP total: "+money(mrpTotal)+"\nOffer total: "+money(total)+"\nYou save: "+money(mrpTotal-total)+"\n\nCustomer has accepted the Terms & Conditions and 7-day Return & Exchange Policy shown on the website. Please confirm stock, exact model, final price and any delivery charges. Dhanyavaad.";
  openWhatsApp(msg);
 });
+refreshProductPriceLabels();
 document.getElementById("year").textContent=new Date().getFullYear();
 renderCart();
 const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("visible");observer.unobserve(e.target)}}),{threshold:.12});
