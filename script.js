@@ -125,7 +125,7 @@ deliveryForm.addEventListener("submit",e=>{
  e.preventDefault();if(!cart.length)return;
  const fd=new FormData(deliveryForm),name=String(fd.get("customerName")).trim(),phone=String(fd.get("phone")).trim(),address=String(fd.get("address")).trim(),city=String(fd.get("city")).trim(),pin=String(fd.get("pincode")).trim(),accepted=fd.get("acceptTerms")==="on";
  const cityOK=orderMode==="pickup"||SERVICE_CITIES.includes(city.toLowerCase());
- if(!name||!/^[6-9]\d{9}$/.test(phone)||!address||!cityOK||!/^\\d{6}$/.test(pin)||!accepted){toast("Please check details and accept store policies");updateDeliveryStatus();return}
+ if(!name||!/^[6-9]\d{9}$/.test(phone)||!address||!cityOK||!/^[0-9]{6}$/.test(pin)||!accepted){toast("Please check details and accept store policies");updateDeliveryStatus();return}
  const orderId=createOrderId();
  const lines=cart.map(i=>"• "+i.name+" | Size "+i.size+" | Qty "+i.qty+" | "+money(i.price*i.qty)).join("\n");
  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
