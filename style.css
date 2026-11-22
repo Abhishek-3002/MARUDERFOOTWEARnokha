@@ -152,3 +152,17 @@
   .product-image{padding:7px}
   .product-image img{object-fit:contain !important}
 }
+
+
+/* Header wordmark, visible contact details and contained discount labels */
+.brand{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;text-decoration:none;color:#20232b;font-size:22px;font-weight:900;letter-spacing:-1.1px;line-height:1}
+.brand span,.footer-brand span{color:#8298d8;font-weight:800;letter-spacing:-.7px}
+.phone-cta{white-space:nowrap}
+.contact-phone{margin-top:14px!important;font-size:14px!important;color:#596783!important}
+.contact-phone a,.footer a[href^="tel:"]{color:#6179b7;font-weight:900;text-decoration:none}
+.footer-brand{font-size:20px;font-weight:900;letter-spacing:-1px;color:#20232b;white-space:nowrap}
+.footer-brand span{display:block;font-size:13px;letter-spacing:2px}
+.discount-tag{position:absolute;top:10px;right:10px;left:auto;z-index:4;display:inline-flex;align-items:center;justify-content:center;max-width:calc(100% - 20px);padding:6px 9px;border-radius:999px;font-size:9px;line-height:1.15;font-weight:900;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box;box-shadow:0 3px 12px rgba(30,90,65,.10)}
+.product-image{isolation:isolate}
+@media(max-width:850px){.brand{font-size:19px}.header-actions{gap:6px}.phone-cta{padding:10px 11px}}
+@media(max-width:620px){.brand{font-size:16px;letter-spacing:-.7px}.brand span{letter-spacing:-.5px}.header-actions{gap:4px}.phone-cta{display:none}.footer-brand{font-size:18px}.footer-brand span{font-size:11px}.discount-tag{top:7px;right:7px;max-width:calc(100% - 14px);padding:5px 7px;font-size:8px}.contact-phone{font-size:13px!important}}
