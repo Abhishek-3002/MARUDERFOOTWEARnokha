@@ -45,9 +45,55 @@ extraProducts.forEach((p,n)=>{
  card.className="product-card reveal";
  card.dataset.category=(type==="chappal"?"chappal":brand.toLowerCase()+" shoes");
  const sizeOptions=type==="chappal"?["6","7","8","9","10"]:["6","7","8","9","10","11"];
- card.innerHTML='<div class="product-image"><span class="product-tag">'+brand.toUpperCase()+'</span><span class="discount-tag">'+Math.round((mrp-price)/mrp*100)+'% OFF</span><img src="'+img+'" alt="'+name+'" loading="lazy" onerror="this.src=\'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900\'"><span class="image-index">'+String(n+7).padStart(2,"0")+' / 36</span></div><div class="product-info"><div class="product-title"><h3>'+name+'</h3><p>'+(type==="chappal"?"Slides · Sandals":"Everyday · Sport")+'</p></div><div class="price-block"><strong>₹'+price.toLocaleString("en-IN")+'</strong><del>₹'+mrp.toLocaleString("en-IN")+' MRP</del><small>You save ₹'+(mrp-price).toLocaleString("en-IN")+'</small></div></div><div class="product-buy"><label>'+(type==="chappal"?"Size":"UK size")+'<select class="size-select" aria-label="Select size"><option value="">Choose size</option>'+sizeOptions.map(s=>'<option>'+s+'</option>').join("")+'</select></label><button class="add-btn" data-id="'+id+'" data-name="'+name+'" data-price="'+price+'" data-mrp="'+mrp+'" data-image="'+img+'">Add to cart <span>＋</span></button></div>';
+ card.innerHTML='<div class="product-image"><span class="product-tag">'+brand.toUpperCase()+'</span><span class="discount-tag">'+Math.round((mrp-price)/mrp*100)+'% OFF</span><img src="'+img+'" alt="'+name+'" loading="lazy" ><span class="image-index">'+String(n+7).padStart(2,"0")+' / 36</span></div><div class="product-info"><div class="product-title"><h3>'+name+'</h3><p>'+(type==="chappal"?"Slides · Sandals":"Everyday · Sport")+'</p></div><div class="price-block"><strong>₹'+price.toLocaleString("en-IN")+'</strong><del>₹'+mrp.toLocaleString("en-IN")+' MRP</del><small>You save ₹'+(mrp-price).toLocaleString("en-IN")+'</small></div></div><div class="product-buy"><label>'+(type==="chappal"?"Size":"UK size")+'<select class="size-select" aria-label="Select size"><option value="">Choose size</option>'+sizeOptions.map(s=>'<option>'+s+'</option>').join("")+'</select></label><button class="add-btn" data-id="'+id+'" data-name="'+name+'" data-price="'+price+'" data-mrp="'+mrp+'" data-image="'+img+'">Add to cart <span>＋</span></button></div>';
  grid.appendChild(card);
 });
+
+// Product image reliability + full-size image viewer
+const IMAGE_FALLBACK="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&auto=format&fit=crop&q=85";
+grid.querySelectorAll(".product-image img").forEach(img=>{img.loading="lazy";img.decoding="async";img.tabIndex=0;img.setAttribute("role","button");img.setAttribute("aria-label","View full image: "+(img.alt||"product"));});
+grid.addEventListener("error",e=>{
+ const img=e.target;
+ if(!(img instanceof HTMLImageElement)||!img.closest(".product-image"))return;
+ if(img.dataset.fallbackTried!=="1"){
+  img.dataset.fallbackTried="1";
+  img.src=IMAGE_FALLBACK;
+ }else{
+  img.style.display="none";
+  img.closest(".product-image")?.classList.add("image-fallback");
+ }
+},true);
+const lightbox=document.getElementById("imageLightbox");
+const lightboxImage=document.getElementById("lightboxImage");
+const lightboxCaption=document.getElementById("lightboxCaption");
+function showFullImage(img){
+ if(!lightbox||!img)return;
+ lightboxImage.src=img.currentSrc||img.src;
+ lightboxImage.alt=img.alt||"MARUDER footwear product";
+ lightboxCaption.textContent=img.alt||"MARUDER FOOTWEAR";
+ lightbox.classList.add("open");
+ lightbox.setAttribute("aria-hidden","false");
+ document.body.style.overflow="hidden";
+ document.getElementById("lightboxClose").focus();
+}
+function closeFullImage(){
+ if(!lightbox)return;
+ lightbox.classList.remove("open");
+ lightbox.setAttribute("aria-hidden","true");
+ lightboxImage.removeAttribute("src");
+ document.body.style.overflow="";
+}
+grid.addEventListener("click",e=>{
+ const img=e.target.closest(".product-image img");
+ if(img)showFullImage(img);
+});
+grid.addEventListener("keydown",e=>{
+ if((e.key==="Enter"||e.key===" ")&&e.target.matches(".product-image img")){e.preventDefault();showFullImage(e.target);}
+});
+document.getElementById("lightboxClose").addEventListener("click",closeFullImage);
+lightbox.addEventListener("click",e=>{if(e.target===lightbox)closeFullImage();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeFullImage();});
+
 function refreshProductPriceLabels(){
  document.querySelectorAll(".product-card").forEach(card=>{
   const btn=card.querySelector(".add-btn"),price=Number(btn?.dataset.price),mrp=Number(btn?.dataset.mrp);
