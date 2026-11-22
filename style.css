@@ -40,3 +40,33 @@
 .policy-grid details p{font-size:10px;line-height:1.85;color:#818b9e;margin:13px 0 0}
 .policy-note{font-size:9px;line-height:1.7;color:#9aa3b2;margin-top:18px}
 @media(max-width:620px){.order-mode{gap:7px}.order-mode-btn{padding:10px 8px;grid-template-columns:25px 1fr}.order-mode-btn>span{font-size:18px}.order-mode-btn strong{font-size:10px}.policy-grid{grid-template-columns:1fr}.store-policies{padding:55px 7%}.policy-inner h2{font-size:30px}}
+
+
+/* Cart usability: keep cart items, form and totals reachable on all screens */
+.cart-drawer{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+.cart-items{flex:1 1 auto;min-height:90px;max-height:34vh;overscroll-behavior:contain}
+.delivery-form{flex:0 1 auto;max-height:43vh;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.cart-footer{flex:0 0 auto;background:rgba(250,252,255,.94);padding-bottom:env(safe-area-inset-bottom)}
+.cart-row{grid-template-columns:58px minmax(0,1fr) auto;align-items:center;gap:10px}
+.cart-thumb{width:58px;height:58px;object-fit:contain;border-radius:11px;background:#f0f2f8}
+.cart-product-details{min-width:0}
+.cart-product-details h3{line-height:1.4}
+.cart-product-details p{line-height:1.55}
+.cart-row>strong{white-space:nowrap;text-align:right}
+.cart-discount{display:block;color:#29936a;font-size:9px;font-weight:800;margin-top:5px}
+.cart-savings{display:block;color:#279267;font-size:9px;font-weight:800;margin-top:4px;text-align:right}
+.price-block{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.price-block small{font-size:8px;color:#279267;font-weight:800}
+.price-block del{font-size:9px;color:#a6adba}
+.discount-tag{background:#e8f7ef;color:#25875b}
+@media(max-width:620px){
+ .cart-drawer{padding:16px;gap:0}
+ .cart-items{max-height:27vh;min-height:75px}
+ .delivery-form{max-height:43vh;padding:13px 11px;margin:7px 0 12px}
+ .cart-row{grid-template-columns:48px minmax(0,1fr) auto;gap:8px;padding:12px 1px}
+ .cart-thumb{width:48px;height:48px}
+ .cart-row>strong{font-size:10px}
+ .cart-row-actions{gap:6px}
+ .qty-btn,.remove-btn{padding:5px 7px}
+ .cart-footer{padding-top:12px}
+}
