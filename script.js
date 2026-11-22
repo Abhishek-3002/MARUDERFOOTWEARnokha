@@ -52,16 +52,23 @@ extraProducts.forEach((p,n)=>{
 // Product image reliability + full-size image viewer
 const IMAGE_FALLBACK="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&auto=format&fit=crop&q=85";
 grid.querySelectorAll(".product-image img").forEach(img=>{img.loading="lazy";img.decoding="async";img.tabIndex=0;img.setAttribute("role","button");img.setAttribute("aria-label","View full image: "+(img.alt||"product"));});
+function markImageUnavailable(img){
+ if(!img||img.dataset.unavailable==="1")return;
+ img.dataset.unavailable="1";
+ img.style.display="none";
+ const wrap=img.closest(".product-image,.cart-thumb-wrap")||img.parentElement;
+ if(wrap){
+  wrap.classList.add("image-fallback");
+  if(!wrap.querySelector(".image-unavailable")){const note=document.createElement("span");note.className="image-unavailable";note.textContent="Photo unavailable";wrap.appendChild(note);}
+ }
+}
 grid.addEventListener("error",e=>{
  const img=e.target;
- if(!(img instanceof HTMLImageElement)||!img.closest(".product-image"))return;
- if(img.dataset.fallbackTried!=="1"){
-  img.dataset.fallbackTried="1";
-  img.src=IMAGE_FALLBACK;
- }else{
-  img.style.display="none";
-  img.closest(".product-image")?.classList.add("image-fallback");
- }
+ if(img instanceof HTMLImageElement&&img.closest(".product-image"))markImageUnavailable(img);
+},true);
+itemsEl.addEventListener("error",e=>{
+ const img=e.target;
+ if(img instanceof HTMLImageElement&&img.classList.contains("cart-thumb"))markImageUnavailable(img);
 },true);
 const lightbox=document.getElementById("imageLightbox");
 const lightboxImage=document.getElementById("lightboxImage");
@@ -123,7 +130,7 @@ const SERVICE_CITIES=["nokha","bikaner","nagaur","dungargarh","bajju"];
 let cart=[];try{const saved=JSON.parse(localStorage.getItem("maruderCart")||"[]");cart=Array.isArray(saved)?saved.filter(item=>item&&typeof item.id==="string"&&typeof item.name==="string"&&Number.isFinite(Number(item.price))&&Number(item.price)>0&&Number.isFinite(Number(item.qty))&&Number(item.qty)>0&&String(item.size||"")).map(item=>({...item,price:Number(item.price),mrp:Number(item.mrp)||Number(item.price),qty:Math.min(99,Math.floor(Number(item.qty)))})):[]}catch{cart=[]}
 const money=n=>"₹"+Number(n).toLocaleString("en-IN");
 function save(){try{localStorage.setItem("maruderCart",JSON.stringify(cart))}catch(error){console.warn("Cart could not be saved on this browser",error)}renderCart()}
-function openCart(){drawer.classList.add("open");backdrop.classList.add("open");drawer.setAttribute("aria-hidden","false");document.body.style.overflow="hidden"}
+function openCart(){drawer.scrollTop=0;drawer.classList.add("open");backdrop.classList.add("open");drawer.setAttribute("aria-hidden","false");document.body.style.overflow="hidden"}
 function closeCart(){drawer.classList.remove("open");backdrop.classList.remove("open");drawer.setAttribute("aria-hidden","true");document.body.style.overflow=""}
 document.getElementById("openCart").addEventListener("click",openCart);
 document.getElementById("closeCart").addEventListener("click",closeCart);
@@ -147,12 +154,12 @@ function renderCart(){
   const itemMrp=Number(item.mrp)||item.price;
   const image=item.img||"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=240";
   const pct=itemMrp>0?Math.round((itemMrp-item.price)/itemMrp*100):0;
-  return '<div class="cart-row"><img class="cart-thumb" src="'+escapeHTML(image)+'" alt="'+escapeHTML(item.name)+'"><div class="cart-product-details"><h3>'+escapeHTML(item.name)+'</h3><p>UK '+escapeHTML(item.size)+' · Offer '+money(item.price)+' <del>'+money(itemMrp)+' MRP</del></p><small class="cart-discount">'+pct+'% OFF · You save '+money((itemMrp-item.price)*item.qty)+'</small><div class="cart-row-actions"><button class="qty-btn" data-action="minus" data-index="'+n+'" aria-label="Decrease quantity">−</button><b>'+item.qty+'</b><button class="qty-btn" data-action="plus" data-index="'+n+'" aria-label="Increase quantity">＋</button><button class="remove-btn" data-action="remove" data-index="'+n+'">Remove</button></div></div><strong>'+money(item.price*item.qty)+'</strong></div>';
+  return '<div class="cart-row"><div class="cart-thumb-wrap"><img class="cart-thumb" src="'+escapeHTML(image)+'" alt="'+escapeHTML(item.name)+'"></div><div class="cart-product-details"><h3>'+escapeHTML(item.name)+'</h3><p>UK '+escapeHTML(item.size)+' · Offer '+money(item.price)+' <del>'+money(itemMrp)+' MRP</del></p><small class="cart-discount">'+pct+'% OFF · You save '+money((itemMrp-item.price)*item.qty)+'</small><div class="cart-row-actions"><button class="qty-btn" data-action="minus" data-index="'+n+'" aria-label="Decrease quantity">−</button><b>'+item.qty+'</b><button class="qty-btn" data-action="plus" data-index="'+n+'" aria-label="Increase quantity">＋</button><button class="remove-btn" data-action="remove" data-index="'+n+'">Remove</button></div></div><strong>'+money(item.price*item.qty)+'</strong></div>';
  }).join("");
  itemsEl.querySelectorAll("[data-action]").forEach(button=>button.addEventListener("click",()=>{
   const n=Number(button.dataset.index),action=button.dataset.action;
   if(!cart[n])return;
-  if(action==="plus")cart[n].qty=Math.min(99,cart[n].qty+1);
+  if(action==="plus"){if(cart[n].qty>=99){toast("Maximum 99 per size");return}cart[n].qty++;}
   if(action==="minus")cart[n].qty--;
   if(action==="remove"||cart[n].qty<=0)cart.splice(n,1);
   save();
@@ -172,13 +179,14 @@ function updateDeliveryStatus(){
  const city=(citySelect.value||"").trim().toLowerCase();
  const pin=deliveryForm.elements.pincode.value.trim();
  if(orderMode==="pickup"){
+  if(!/^\d{6}$/.test(pin)){deliveryStatus.textContent="Pickup ke liye store PIN 334803 set hona chahiye.";deliveryStatus.className="delivery-status unavailable";placeOrder.disabled=true;return}
   deliveryStatus.textContent="✓ Store pickup selected. Collect from MARUDER FOOTWEAR, Nokha, Rajasthan 334803. Please wait for WhatsApp confirmation.";
   deliveryStatus.className="delivery-status available";placeOrder.disabled=false;return;
  }
  const available=SERVICE_CITIES.includes(city);
  if(!city){deliveryStatus.textContent="City select karte hi delivery status dikhega.";deliveryStatus.className="delivery-status";placeOrder.disabled=true;return}
  if(!available){deliveryStatus.textContent="✕ Is city mein abhi delivery available nahi hai.";deliveryStatus.className="delivery-status unavailable";placeOrder.disabled=true;return}
- if(pin.length===6&&!/^\d{6}$/.test(pin)){deliveryStatus.textContent="PIN Code 6 digits ka hona chahiye.";deliveryStatus.className="delivery-status unavailable";placeOrder.disabled=true;return}
+ if(!/^\d{6}$/.test(pin)){deliveryStatus.textContent="PIN Code ke 6 digits enter karein.";deliveryStatus.className="delivery-status unavailable";placeOrder.disabled=true;return}
  deliveryStatus.textContent="✓ "+citySelect.value+" mein delivery available hai. PIN code courier team se confirm hoga.";
  deliveryStatus.className="delivery-status available";placeOrder.disabled=false;
 }
