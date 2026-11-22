@@ -94,6 +94,7 @@ grid.addEventListener("click",e=>{
  const img=e.target.closest(".product-image img");
  if(img)showFullImage(img);
 });
+itemsEl.addEventListener("click",e=>{const img=e.target.closest(".cart-thumb");if(img)showFullImage(img);});
 grid.addEventListener("keydown",e=>{
  if((e.key==="Enter"||e.key===" ")&&e.target.matches(".product-image img")){e.preventDefault();showFullImage(e.target);}
 });
