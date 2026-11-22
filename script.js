@@ -1,17 +1,21 @@
-const WHATSAPP_NUMBER = "916376004627";
-const GENERAL_MESSAGE = "Namaste MARUDER Shoes Store! Mujhe aapki website par shoes pasand aaye hain. Kripya available brands, designs, price, sizes, colours aur delivery details share karein.";
-function openWhatsApp(message = GENERAL_MESSAGE) {
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
-}
-document.querySelectorAll("[data-whatsapp-general]").forEach(link => link.addEventListener("click", e => { e.preventDefault(); openWhatsApp(); }));
-const menuToggle=document.getElementById("menuToggle"), nav=document.getElementById("nav");
-menuToggle.addEventListener("click",()=>nav.classList.toggle("open"));
-nav.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>nav.classList.remove("open")));
-document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",()=>{
- document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active")); btn.classList.add("active");
- const f=btn.dataset.filter; document.querySelectorAll(".product-card").forEach(card=>card.hidden=f!=="all"&&!card.dataset.category.split(" ").includes(f));
-}));
-document.querySelectorAll(".order-icon").forEach(btn=>btn.addEventListener("click",()=>{
- const p=btn.dataset.product; openWhatsApp(`Namaste MARUDER Shoes Store! Mujhe ${p} ke baare mein jankari chahiye. Kripya iska price, available sizes, colours aur delivery details share karein.`);
-}));
-document.getElementById("year").textContent=new Date().getFullYear();
+const WHATSAPP_NUMBER="916376004627";
+const GENERAL_MESSAGE="Namaste MARUDER Shoes Store! 👋 Mujhe shoes ke designs, sizes, prices aur delivery details ke baare mein jankari chahiye.";
+function openWhatsApp(message=GENERAL_MESSAGE){window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(message),"_blank","noopener,noreferrer")}
+document.querySelectorAll("[data-whatsapp-general]").forEach(link=>link.addEventListener("click",e=>{e.preventDefault();openWhatsApp()}));
+const menuToggle=document.getElementById("menuToggle"),nav=document.getElementById("nav");menuToggle.addEventListener("click",()=>nav.classList.toggle("open"));nav.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>nav.classList.remove("open")));
+document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));btn.classList.add("active");const f=btn.dataset.filter;document.querySelectorAll(".product-card").forEach(card=>card.hidden=f!=="all"&&!card.dataset.category.split(" ").includes(f))}));
+const drawer=document.getElementById("cartDrawer"),backdrop=document.getElementById("cartBackdrop"),itemsEl=document.getElementById("cartItems"),countEl=document.getElementById("cartCount"),drawerCount=document.getElementById("drawerCount"),subtotalEl=document.getElementById("cartSubtotal"),checkout=document.getElementById("checkoutWhatsApp");
+let cart=[];try{cart=JSON.parse(localStorage.getItem("maruderCart")||"[]")}catch{cart=[]}
+const money=n=>"₹"+Number(n).toLocaleString("en-IN");
+function save(){localStorage.setItem("maruderCart",JSON.stringify(cart));renderCart()}
+function openCart(){drawer.classList.add("open");backdrop.classList.add("open");drawer.setAttribute("aria-hidden","false");document.body.style.overflow="hidden"}
+function closeCart(){drawer.classList.remove("open");backdrop.classList.remove("open");drawer.setAttribute("aria-hidden","true");document.body.style.overflow=""}
+document.getElementById("openCart").addEventListener("click",openCart);document.getElementById("closeCart").addEventListener("click",closeCart);backdrop.addEventListener("click",closeCart);document.getElementById("continueShopping").addEventListener("click",()=>{closeCart();document.getElementById("collection").scrollIntoView({behavior:"smooth"})});
+function renderCart(){const count=cart.reduce((s,i)=>s+i.qty,0),total=cart.reduce((s,i)=>s+i.price*i.qty,0);countEl.textContent=count;drawerCount.textContent="("+count+")";subtotalEl.textContent=money(total);checkout.disabled=!cart.length;if(!cart.length){itemsEl.innerHTML='<div class="empty-cart"><span>🛍</span><h3>Your cart is waiting</h3><p>Add a pair you love and it will appear here.</p><button class="continue-btn" id="continueShopping">Explore shoes</button></div>';document.getElementById("continueShopping").addEventListener("click",()=>{closeCart();document.getElementById("collection").scrollIntoView({behavior:"smooth"})});return}itemsEl.innerHTML=cart.map((i,n)=>'<div class="cart-row"><div><h3>'+escapeHTML(i.name)+'</h3><p>UK '+escapeHTML(i.size)+' · '+money(i.price)+' each</p><div class="cart-row-actions"><button class="qty-btn" data-action="minus" data-index="'+n+'">−</button><b>'+i.qty+'</b><button class="qty-btn" data-action="plus" data-index="'+n+'">＋</button><button class="remove-btn" data-action="remove" data-index="'+n+'">Remove</button></div></div><strong>'+money(i.price*i.qty)+'</strong></div>').join("");itemsEl.querySelectorAll("[data-action]").forEach(b=>b.addEventListener("click",()=>{const n=Number(b.dataset.index),act=b.dataset.action;if(act==="plus")cart[n].qty++;if(act==="minus")cart[n].qty--;if(act==="remove"||cart[n].qty<=0)cart.splice(n,1);save()}))}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove("show"),2200)}
+document.querySelectorAll(".add-btn").forEach(btn=>btn.addEventListener("click",()=>{const card=btn.closest(".product-card"),size=card.querySelector(".size-select").value;if(!size){card.querySelector(".size-select").focus();toast("Please select your UK shoe size first");return}const id=btn.dataset.id,found=cart.find(i=>i.id===id&&i.size===size);if(found)found.qty++;else cart.push({id,name:btn.dataset.name,price:Number(btn.dataset.price),size,qty:1});save();toast(btn.dataset.name+" added to cart");openCart()}));
+checkout.addEventListener("click",()=>{if(!cart.length)return;const lines=cart.map(i=>"• "+i.name+" | UK "+i.size+" | Qty "+i.qty+" | "+money(i.price*i.qty)).join("\n");const total=cart.reduce((s,i)=>s+i.price*i.qty,0);openWhatsApp("Namaste MARUDER Shoes Store! 👋\n\nI would like to enquire about my cart:\n"+lines+"\n\nIndicative subtotal: "+money(total)+"\n\nPlease confirm stock, exact model, final price, delivery charges and payment details. Thank you!")});
+document.getElementById("year").textContent=new Date().getFullYear();renderCart();
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("visible");observer.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll(".reveal").forEach(el=>observer.observe(el));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeCart()});
