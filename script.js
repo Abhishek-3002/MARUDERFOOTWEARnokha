@@ -1,5 +1,5 @@
 const WHATSAPP_NUMBER="916376004627";
-const GENERAL_MESSAGE="Namaste MARUDER Shoes Store! Mujhe shoes/chappal ke designs, sizes, prices aur delivery details chahiye.";
+const GENERAL_MESSAGE="Namaste MARUDER FOOTWEAR! Mujhe shoes/chappal ke designs, sizes, prices aur delivery details chahiye.";
 function openWhatsApp(message=GENERAL_MESSAGE){window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(message),"_blank","noopener,noreferrer")}
 document.querySelectorAll("[data-whatsapp-general]").forEach(link=>link.addEventListener("click",e=>{e.preventDefault();openWhatsApp()}));
 const menuToggle=document.getElementById("menuToggle"),nav=document.getElementById("nav");
@@ -72,7 +72,7 @@ const deliveryForm=document.getElementById("deliveryForm"),citySelect=document.g
 let orderMode="delivery";
 const STORE_ADDRESS="Ke Pass, Tehsil Rd, Man Market, SBI ATM Ke Pass, Bus Stand Rd, Nokha, Rajasthan 334803";
 const modeButtons=[...document.querySelectorAll("[data-order-mode]")];
-modeButtons.forEach(btn=>btn.addEventListener("click",()=>{orderMode=btn.dataset.orderMode;modeButtons.forEach(b=>{const active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active))});document.getElementById("formHeading").textContent=orderMode==="pickup"?"Store pickup details":"Delivery details";document.getElementById("formIntro").textContent=orderMode==="pickup"?"Apni details bharein. Order ready hone par WhatsApp confirmation milega.":"Apna delivery address bharein. Store team WhatsApp par confirm karegi.";if(orderMode==="pickup"){citySelect.value="Nokha";deliveryForm.elements.pincode.value="334803";deliveryStatus.textContent="✓ Store pickup selected. Collect from MARUDER Shoes Store, Nokha. Please wait for confirmation before visiting.";deliveryStatus.className="delivery-status available";placeOrder.disabled=false;}else{citySelect.value="";deliveryForm.elements.pincode.value="";updateDeliveryStatus();}}));
+modeButtons.forEach(btn=>btn.addEventListener("click",()=>{orderMode=btn.dataset.orderMode;modeButtons.forEach(b=>{const active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active))});document.getElementById("formHeading").textContent=orderMode==="pickup"?"Store pickup details":"Delivery details";document.getElementById("formIntro").textContent=orderMode==="pickup"?"Apni details bharein. Order ready hone par WhatsApp confirmation milega.":"Apna delivery address bharein. Store team WhatsApp par confirm karegi.";if(orderMode==="pickup"){citySelect.value="Nokha";deliveryForm.elements.pincode.value="334803";deliveryStatus.textContent="✓ Store pickup selected. Collect from MARUDER FOOTWEAR, Nokha. Please wait for confirmation before visiting.";deliveryStatus.className="delivery-status available";placeOrder.disabled=false;}else{citySelect.value="";deliveryForm.elements.pincode.value="";updateDeliveryStatus();}}));
 const SERVICE_CITIES=["nokha","bikaner","nagaur","dungargarh","bajju"];
 let cart=[];try{const saved=JSON.parse(localStorage.getItem("maruderCart")||"[]");cart=Array.isArray(saved)?saved.filter(item=>item&&typeof item.id==="string"&&typeof item.name==="string"&&Number.isFinite(Number(item.price))&&Number(item.price)>0&&Number.isFinite(Number(item.qty))&&Number(item.qty)>0&&String(item.size||"")).map(item=>({...item,price:Number(item.price),mrp:Number(item.mrp)||Number(item.price),qty:Math.min(99,Math.floor(Number(item.qty)))})):[]}catch{cart=[]}
 const money=n=>"₹"+Number(n).toLocaleString("en-IN");
@@ -126,7 +126,7 @@ function updateDeliveryStatus(){
  const city=(citySelect.value||"").trim().toLowerCase();
  const pin=deliveryForm.elements.pincode.value.trim();
  if(orderMode==="pickup"){
-  deliveryStatus.textContent="✓ Store pickup selected. Collect from MARUDER Shoes Store, Nokha, Rajasthan 334803. Please wait for WhatsApp confirmation.";
+  deliveryStatus.textContent="✓ Store pickup selected. Collect from MARUDER FOOTWEAR, Nokha, Rajasthan 334803. Please wait for WhatsApp confirmation.";
   deliveryStatus.className="delivery-status available";placeOrder.disabled=false;return;
  }
  const available=SERVICE_CITIES.includes(city);
@@ -152,7 +152,7 @@ deliveryForm.addEventListener("submit",e=>{
  const lines=cart.map(i=>"• "+i.name+" | Size "+i.size+" | Qty "+i.qty+" | MRP "+money((Number(i.mrp)||i.price)*i.qty)+" | Offer "+money(i.price*i.qty)+" | Save "+money(((Number(i.mrp)||i.price)-i.price)*i.qty)).join("\n");
  const total=cart.reduce((s,i)=>s+i.price*i.qty,0),mrpTotal=cart.reduce((s,i)=>s+(Number(i.mrp)||i.price)*i.qty,0);
  const fulfilment=orderMode==="pickup"?"STORE PICKUP":"HOME DELIVERY";
- const msg="Namaste MARUDER Shoes Store! Mujhe ye order place karna hai.\n\nORDER ID: "+orderId+"\nORDER TYPE: "+fulfilment+"\n\nCUSTOMER DETAILS\nName: "+name+"\nMobile: "+phone+"\nAddress / Pickup note: "+address+"\nCity: "+city+"\nPIN Code: "+pin+"\n\n"+(orderMode==="pickup"?"PICKUP LOCATION\n"+STORE_ADDRESS+"\nPlease confirm when the order is ready.\n":"DELIVERY AREA\nPlease confirm PIN-level serviceability and expected delivery date.\n")+"\nORDER ITEMS\n"+lines+"\n\nMRP total: "+money(mrpTotal)+"\nOffer total: "+money(total)+"\nYou save: "+money(mrpTotal-total)+"\n\nCustomer has accepted the Terms & Conditions and 7-day Return & Exchange Policy shown on the website. Please confirm stock, exact model, final price and any delivery charges. Dhanyavaad.";
+ const msg="Namaste MARUDER FOOTWEAR! Mujhe ye order place karna hai.\n\nORDER ID: "+orderId+"\nORDER TYPE: "+fulfilment+"\n\nCUSTOMER DETAILS\nName: "+name+"\nMobile: "+phone+"\nAddress / Pickup note: "+address+"\nCity: "+city+"\nPIN Code: "+pin+"\n\n"+(orderMode==="pickup"?"PICKUP LOCATION\n"+STORE_ADDRESS+"\nPlease confirm when the order is ready.\n":"DELIVERY AREA\nPlease confirm PIN-level serviceability and expected delivery date.\n")+"\nORDER ITEMS\n"+lines+"\n\nMRP total: "+money(mrpTotal)+"\nOffer total: "+money(total)+"\nYou save: "+money(mrpTotal-total)+"\n\nCustomer has accepted the Terms & Conditions and 7-day Return & Exchange Policy shown on the website. Please confirm stock, exact model, final price and any delivery charges. Dhanyavaad.";
  openWhatsApp(msg);
 });
 refreshProductPriceLabels();
