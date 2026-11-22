@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" role="img" aria-labelledby="title"><title id="title">MARUDER Shoes Store Footwear</title><rect width="1200" height="460" fill="#fff"/><g fill="#000"><path d="M150 130c-20-10-37-23-46-42l7-5 25 20-9-30 8-3 22 32 9-27 9 3-7 39 28-22 9 7-27 39-14 39-30 35-12-8 16-35-21 13-34 39-12-9 22-44 18-29-8-21-24-8-18-17 6-8 25 10 23-2 9-20 1-25 10-2 12 18 3 27 27-11 13-30 8 4-8 37-23 27-37 17-15 39-17 31-12-8 14-39 7-25-13-10-22-2z"/><text x="215" y="230" font-family="Arial Black,Arial,sans-serif" font-size="160" font-weight="900" letter-spacing="-8">MARUDER</text><text x="600" y="315" text-anchor="middle" font-family="Arial,sans-serif" font-size="43" font-weight="600" letter-spacing="25">SHOES STORE</text><text x="600" y="435" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-size="145" font-weight="900" letter-spacing="-8">FOOTWEAR</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-labelledby="title">
+<title id="title">MARUDER Shoes Store Footwear</title>
+<rect width="1000" height="1000" fill="#fff"/>
+<g fill="#000">
+<path d="M230 286c-20-7-35-18-45-34l-12 4 17 27-28-10-8 12 35 20 28 3 26 22-6 28-30 26-42 26-25 39 14 12 39-29 29-12-14 42 13 10 31-39 20-39 34-16 27 8 20 30 12 36 18 4 7-13-12-41-8-36-21-27-35-10 10-34 25-28 14-37-9-7-21 24-17 11-7-23 4-33-14-4-14 34-21 18-21-10-8-31-14 2 3 28-20-10z"/>
+<text x="500" y="555" text-anchor="middle" font-family="Arial Black,Impact,sans-serif" font-size="172" font-weight="900" letter-spacing="-9" textLength="820" lengthAdjust="spacingAndGlyphs">MARUDER</text>
+<text x="500" y="650" text-anchor="middle" font-family="Arial,sans-serif" font-size="44" font-weight="600" letter-spacing="22">SHOES STORE</text>
+<text x="500" y="850" text-anchor="middle" font-family="Arial Black,Impact,sans-serif" font-size="150" font-weight="900" letter-spacing="-8" textLength="880" lengthAdjust="spacingAndGlyphs">FOOTWEAR</text>
+</g></svg>
