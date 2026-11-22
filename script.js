@@ -140,9 +140,9 @@ deliveryForm.addEventListener("submit",e=>{
  if(!name||!/^[6-9]\d{9}$/.test(phone)||!address||!cityOK||!/^[0-9]{6}$/.test(pin)||!accepted){toast("Please check details and accept store policies");updateDeliveryStatus();return}
  const orderId=createOrderId();
  const lines=cart.map(i=>"• "+i.name+" | Size "+i.size+" | Qty "+i.qty+" | "+money(i.price*i.qty)).join("\n");
- const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+ const total=cart.reduce((s,i)=>s+i.price*i.qty,0),mrpTotal=cart.reduce((s,i)=>s+(Number(i.mrp)||i.price)*i.qty,0);
  const fulfilment=orderMode==="pickup"?"STORE PICKUP":"HOME DELIVERY";
- const msg="Namaste MARUDER Shoes Store! Mujhe ye order place karna hai.\n\nORDER ID: "+orderId+"\nORDER TYPE: "+fulfilment+"\n\nCUSTOMER DETAILS\nName: "+name+"\nMobile: "+phone+"\nAddress / Pickup note: "+address+"\nCity: "+city+"\nPIN Code: "+pin+"\n\n"+(orderMode==="pickup"?"PICKUP LOCATION\n"+STORE_ADDRESS+"\nPlease confirm when the order is ready.\n":"DELIVERY AREA\nPlease confirm PIN-level serviceability and expected delivery date.\n")+"\nORDER ITEMS\n"+lines+"\n\nIndicative subtotal: "+money(total)+"\n\nCustomer has accepted the Terms & Conditions and 7-day Return & Exchange Policy shown on the website. Please confirm stock, exact model, final price and any delivery charges. Dhanyavaad.";
+ const msg="Namaste MARUDER Shoes Store! Mujhe ye order place karna hai.\n\nORDER ID: "+orderId+"\nORDER TYPE: "+fulfilment+"\n\nCUSTOMER DETAILS\nName: "+name+"\nMobile: "+phone+"\nAddress / Pickup note: "+address+"\nCity: "+city+"\nPIN Code: "+pin+"\n\n"+(orderMode==="pickup"?"PICKUP LOCATION\n"+STORE_ADDRESS+"\nPlease confirm when the order is ready.\n":"DELIVERY AREA\nPlease confirm PIN-level serviceability and expected delivery date.\n")+"\nORDER ITEMS\n"+lines+"\n\nMRP total: "+money(mrpTotal)+"\nOffer total: "+money(total)+"\nYou save: "+money(mrpTotal-total)+"\n\nCustomer has accepted the Terms & Conditions and 7-day Return & Exchange Policy shown on the website. Please confirm stock, exact model, final price and any delivery charges. Dhanyavaad.";
  openWhatsApp(msg);
 });
 document.getElementById("year").textContent=new Date().getFullYear();
