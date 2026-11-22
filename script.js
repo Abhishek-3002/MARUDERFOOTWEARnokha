@@ -66,10 +66,6 @@ grid.addEventListener("error",e=>{
  const img=e.target;
  if(img instanceof HTMLImageElement&&img.closest(".product-image"))markImageUnavailable(img);
 },true);
-itemsEl.addEventListener("error",e=>{
- const img=e.target;
- if(img instanceof HTMLImageElement&&img.classList.contains("cart-thumb"))markImageUnavailable(img);
-},true);
 const lightbox=document.getElementById("imageLightbox");
 const lightboxImage=document.getElementById("lightboxImage");
 const lightboxCaption=document.getElementById("lightboxCaption");
@@ -94,7 +90,6 @@ grid.addEventListener("click",e=>{
  const img=e.target.closest(".product-image img");
  if(img)showFullImage(img);
 });
-itemsEl.addEventListener("click",e=>{const img=e.target.closest(".cart-thumb");if(img)showFullImage(img);});
 grid.addEventListener("keydown",e=>{
  if((e.key==="Enter"||e.key===" ")&&e.target.matches(".product-image img")){e.preventDefault();showFullImage(e.target);}
 });
@@ -123,6 +118,11 @@ filters.forEach(btn=>btn.addEventListener("click",()=>{
 
 const drawer=document.getElementById("cartDrawer"),backdrop=document.getElementById("cartBackdrop"),itemsEl=document.getElementById("cartItems"),countEl=document.getElementById("cartCount"),drawerCount=document.getElementById("drawerCount"),subtotalEl=document.getElementById("cartSubtotal"),checkout=document.getElementById("checkoutWhatsApp");
 const deliveryForm=document.getElementById("deliveryForm"),citySelect=document.getElementById("deliveryCity"),deliveryStatus=document.getElementById("deliveryStatus"),placeOrder=document.getElementById("placeOrder");
+itemsEl.addEventListener("error",e=>{
+ const img=e.target;
+ if(img instanceof HTMLImageElement&&img.classList.contains("cart-thumb"))markImageUnavailable(img);
+},true);
+itemsEl.addEventListener("click",e=>{const img=e.target.closest(".cart-thumb");if(img)showFullImage(img);});
 let orderMode="delivery";
 const STORE_ADDRESS="Ke Pass, Tehsil Rd, Man Market, SBI ATM Ke Pass, Bus Stand Rd, Nokha, Rajasthan 334803";
 const modeButtons=[...document.querySelectorAll("[data-order-mode]")];
