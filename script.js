@@ -7,40 +7,40 @@ menuToggle.addEventListener("click",()=>nav.classList.toggle("open"));
 nav.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>nav.classList.remove("open")));
 
 const extraProducts=[
-["campus-sport-2","Campus Active Runner","Campus",1299,"shoes","https://www.campusshoes.com/cdn/shop/files/OG-08_OG-08_WHT-L.GRY_2_1200x1200.jpg?v=1757479590"],
-["campus-sport-3","Campus Street Flex","Campus",1499,"shoes","https://www.campusshoes.com/cdn/shop/files/CAMP_CLINT_WHT_GRNG8_3_3ff3eec1-906a-4782-958d-c46740344191.jpg?v=1757479645"],
-["campus-sport-4","Campus Neo Walk","Campus",1599,"shoes","https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900"],
-["campus-sport-5","Campus Court Classic","Campus",1799,"shoes","https://images.unsplash.com/photo-1552346154-21d32810aba3?w=900"],
-["campus-sport-6","Campus Trail Pro","Campus",1899,"shoes","https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=900"],
-["nike-air-1","Nike Air Style","Nike",5495,"shoes","https://sneak.fi/cdn/shop/files/sneak-nike-dunk-low-grey-fog-jalassa.webp?v=1742683756&width=1080"],
-["nike-air-2","Nike Court Vision Style","Nike",4995,"shoes","https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=900"],
-["nike-air-3","Nike Revolution Style 2","Nike",4295,"shoes","https://product-media.cdn.t1.com/product-channel/12476/2025/7/10/3ecc345768b094496d0c603ac8b8e0b8.jpeg"],
-["nike-air-4","Nike Street Low","Nike",5995,"shoes","https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?w=900"],
-["nike-air-5","Nike Runner Flex","Nike",4595,"shoes","https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=900"],
-["adidas-run-1","Adidas Runfalcon Style","Adidas",3999,"shoes","https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=900"],
-["adidas-run-2","Adidas Grand Court Style","Adidas",4499,"shoes","https://images.unsplash.com/photo-1549298916-b41d501d3772?w=900"],
-["adidas-run-3","Adidas Street Lite","Adidas",3499,"shoes","https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=900"],
-["adidas-run-4","Adidas Sports Flex","Adidas",5299,"shoes","https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900"],
-["reebok-run-1","Reebok Energen Style","Reebok",3299,"shoes","https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=900"],
-["reebok-run-2","Reebok Classic Style","Reebok",3999,"shoes","https://images.unsplash.com/photo-1552346154-21d32810aba3?w=900"],
-["reebok-run-3","Reebok Walk Ultra","Reebok",2799,"shoes","https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=900"],
-["reebok-run-4","Reebok Sport Lite","Reebok",3599,"shoes","https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?w=900"],
-["puma-run-3","Puma Flyer Runner","Puma",3499,"shoes","https://www.manelsanchez.com/uploads/media/images/puma-shuffle-sd-varsity-green-1.jpg"],
-["puma-run-4","Puma Smash Style","Puma",3999,"shoes","https://static.ftshp.digital/img/p/1/8/6/3/6/2/5/1863625.jpg"],
-["puma-run-5","Puma Flex Street","Puma",2999,"shoes","https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=900"],
-["puma-run-6","Puma Active Pro","Puma",4299,"shoes","https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=900"],
-["daily-run-1","Everyday Sports Sneaker","Sports",1199,"shoes","https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900"],
-["daily-run-2","Classic Daily Sneaker","Sports",1399,"shoes","https://images.unsplash.com/photo-1549298916-b41d501d3772?w=900"],
-["chappal-1","Everyday Comfort Sliders","Chappal",499,"chappal","https://images.unsplash.com/photo-1603487742131-4160ec999306?w=900"],
-["chappal-2","Soft Cushion Slides","Chappal",599,"chappal","https://images.unsplash.com/photo-1562273138-f46be4ebdf33?w=900"],
-["chappal-3","Men's Casual Flip-Flops","Chappal",349,"chappal","https://images.unsplash.com/photo-1531310197839-ccf54634509e?w=900"],
-["chappal-4","Sporty Slides","Chappal",699,"chappal","https://images.unsplash.com/photo-1603487742131-4160ec999306?w=900"],
-["chappal-5","Daily Wear Sandals","Chappal",799,"chappal","https://images.unsplash.com/photo-1562273138-f46be4ebdf33?w=900"],
-["chappal-6","Comfort Open-Toe Sandals","Chappal",899,"chappal","https://images.unsplash.com/photo-1531310197839-ccf54634509e?w=900"]
+["campus-sport-2","Campus Active Runner","Campus",1299,1999,"shoes","https://www.campusshoes.com/cdn/shop/files/OG-08_OG-08_WHT-L.GRY_2_1200x1200.jpg?v=1757479590"],
+["campus-sport-3","Campus Street Flex","Campus",1499,2299,"shoes","https://www.campusshoes.com/cdn/shop/files/CAMP_CLINT_WHT_GRNG8_3_3ff3eec1-906a-4782-958d-c46740344191.jpg?v=1757479645"],
+["campus-sport-4","Campus Neo Walk","Campus",1599,2499,"shoes","https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900"],
+["campus-sport-5","Campus Court Classic","Campus",1799,2799,"shoes","https://images.unsplash.com/photo-1552346154-21d32810aba3?w=900"],
+["campus-sport-6","Campus Trail Pro","Campus",1899,2999,"shoes","https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=900"],
+["nike-air-1","Nike Air Style","Nike",5495,6999,"shoes","https://sneak.fi/cdn/shop/files/sneak-nike-dunk-low-grey-fog-jalassa.webp?v=1742683756&width=1080"],
+["nike-air-2","Nike Court Vision Style","Nike",4995,6499,"shoes","https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=900"],
+["nike-air-3","Nike Revolution Style 2","Nike",4295,5999,"shoes","https://product-media.cdn.t1.com/product-channel/12476/2025/7/10/3ecc345768b094496d0c603ac8b8e0b8.jpeg"],
+["nike-air-4","Nike Street Low","Nike",5995,7499,"shoes","https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?w=900"],
+["nike-air-5","Nike Runner Flex","Nike",4595,6299,"shoes","https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=900"],
+["adidas-run-1","Adidas Runfalcon Style","Adidas",3999,5499,"shoes","https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=900"],
+["adidas-run-2","Adidas Grand Court Style","Adidas",4499,5999,"shoes","https://images.unsplash.com/photo-1549298916-b41d501d3772?w=900"],
+["adidas-run-3","Adidas Street Lite","Adidas",3499,4999,"shoes","https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=900"],
+["adidas-run-4","Adidas Sports Flex","Adidas",5299,6999,"shoes","https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900"],
+["reebok-run-1","Reebok Energen Style","Reebok",3299,4499,"shoes","https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=900"],
+["reebok-run-2","Reebok Classic Style","Reebok",3999,5499,"shoes","https://images.unsplash.com/photo-1552346154-21d32810aba3?w=900"],
+["reebok-run-3","Reebok Walk Ultra","Reebok",2799,3999,"shoes","https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=900"],
+["reebok-run-4","Reebok Sport Lite","Reebok",3599,4999,"shoes","https://images.unsplash.com/photo-1495555961986-6d4c1ecb7be3?w=900"],
+["puma-run-3","Puma Flyer Runner","Puma",3499,4999,"shoes","https://www.manelsanchez.com/uploads/media/images/puma-shuffle-sd-varsity-green-1.jpg"],
+["puma-run-4","Puma Smash Style","Puma",3999,5499,"shoes","https://static.ftshp.digital/img/p/1/8/6/3/6/2/5/1863625.jpg"],
+["puma-run-5","Puma Flex Street","Puma",2999,4299,"shoes","https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=900"],
+["puma-run-6","Puma Active Pro","Puma",4299,5999,"shoes","https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=900"],
+["daily-run-1","Everyday Sports Sneaker","Sports",1199,1999,"shoes","https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=900"],
+["daily-run-2","Classic Daily Sneaker","Sports",1399,2299,"shoes","https://images.unsplash.com/photo-1549298916-b41d501d3772?w=900"],
+["chappal-1","Everyday Comfort Sliders","Chappal",499,799,"chappal","https://images.unsplash.com/photo-1603487742131-4160ec999306?w=900"],
+["chappal-2","Soft Cushion Slides","Chappal",599,999,"chappal","https://images.unsplash.com/photo-1562273138-f46be4ebdf33?w=900"],
+["chappal-3","Men's Casual Flip-Flops","Chappal",349,599,"chappal","https://images.unsplash.com/photo-1531310197839-ccf54634509e?w=900"],
+["chappal-4","Sporty Slides","Chappal",699,1099,"chappal","https://images.unsplash.com/photo-1603487742131-4160ec999306?w=900"],
+["chappal-5","Daily Wear Sandals","Chappal",799,1299,"chappal","https://images.unsplash.com/photo-1562273138-f46be4ebdf33?w=900"],
+["chappal-6","Comfort Open-Toe Sandals","Chappal",899,1499,"chappal","https://images.unsplash.com/photo-1531310197839-ccf54634509e?w=900"]
 ];
 const grid=document.querySelector(".product-grid");
 extraProducts.forEach((p,n)=>{
- const [id,name,brand,price,type,img]=p;
+ const [id,name,brand,price,mrp,type,img]=p;
  const card=document.createElement("article");
  card.className="product-card reveal";
  card.dataset.category=(type==="chappal"?"chappal":brand.toLowerCase()+" shoes");
