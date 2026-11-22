@@ -65,7 +65,7 @@ const STORE_ADDRESS="Ke Pass, Tehsil Rd, Man Market, SBI ATM Ke Pass, Bus Stand 
 const modeButtons=[...document.querySelectorAll("[data-order-mode]")];
 modeButtons.forEach(btn=>btn.addEventListener("click",()=>{orderMode=btn.dataset.orderMode;modeButtons.forEach(b=>{const active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active))});document.getElementById("formHeading").textContent=orderMode==="pickup"?"Store pickup details":"Delivery details";document.getElementById("formIntro").textContent=orderMode==="pickup"?"Apni details bharein. Order ready hone par WhatsApp confirmation milega.":"Apna delivery address bharein. Store team WhatsApp par confirm karegi.";if(orderMode==="pickup"){citySelect.value="Nokha";deliveryForm.elements.pincode.value="334803";deliveryStatus.textContent="✓ Store pickup selected. Collect from MARUDER Shoes Store, Nokha. Please wait for confirmation before visiting.";deliveryStatus.className="delivery-status available";placeOrder.disabled=false;}else{citySelect.value="";deliveryForm.elements.pincode.value="";updateDeliveryStatus();}}));
 const SERVICE_CITIES=["nokha","bikaner","nagaur","dungargarh","bajju"];
-let cart=[];try{cart=JSON.parse(localStorage.getItem("maruderCart")||"[]")}catch{cart=[]}
+let cart=[];try{const saved=JSON.parse(localStorage.getItem("maruderCart")||"[]");cart=Array.isArray(saved)?saved.filter(item=>item&&typeof item.id==="string"&&typeof item.name==="string"&&Number.isFinite(Number(item.price))&&Number(item.price)>0&&Number.isFinite(Number(item.qty))&&Number(item.qty)>0&&String(item.size||"")).map(item=>({...item,price:Number(item.price),mrp:Number(item.mrp)||Number(item.price),qty:Math.min(99,Math.floor(Number(item.qty)))})):[]}catch{cart=[]}
 const money=n=>"₹"+Number(n).toLocaleString("en-IN");
 function save(){localStorage.setItem("maruderCart",JSON.stringify(cart));renderCart()}
 function openCart(){drawer.classList.add("open");backdrop.classList.add("open");drawer.setAttribute("aria-hidden","false");document.body.style.overflow="hidden"}
@@ -75,19 +75,31 @@ document.getElementById("closeCart").addEventListener("click",closeCart);
 backdrop.addEventListener("click",closeCart);
 document.getElementById("continueShopping").addEventListener("click",()=>{closeCart();document.getElementById("collection").scrollIntoView({behavior:"smooth"})});
 function renderCart(){
- const count=cart.reduce((s,i)=>s+i.qty,0),total=cart.reduce((s,i)=>s+i.price*i.qty,0);
- countEl.textContent=count;drawerCount.textContent="("+count+")";subtotalEl.textContent=money(total);
+ const count=cart.reduce((sum,item)=>sum+item.qty,0);
+ const total=cart.reduce((sum,item)=>sum+item.price*item.qty,0);
+ const mrpTotal=cart.reduce((sum,item)=>sum+(Number(item.mrp)||item.price)*item.qty,0);
+ countEl.textContent=count;drawerCount.textContent="("+count+")";
+ subtotalEl.textContent=money(total);
+ const savings=document.getElementById("cartSavings");
+ if(savings)savings.textContent=mrpTotal>total?"You save "+money(mrpTotal-total):"";
  checkout.disabled=!cart.length;deliveryForm.hidden=!cart.length;
  if(!cart.length){
   itemsEl.innerHTML='<div class="empty-cart"><span>🛍</span><h3>Your cart is waiting</h3><p>Add a pair you love and it will appear here.</p><button class="continue-btn" id="continueShopping2">Explore shoes</button></div>';
   document.getElementById("continueShopping2").addEventListener("click",()=>{closeCart();document.getElementById("collection").scrollIntoView({behavior:"smooth"})});
   return;
  }
- itemsEl.innerHTML=cart.map((i,n)=>'<div class="cart-row"><div><h3>'+escapeHTML(i.name)+'</h3><p>UK '+escapeHTML(i.size)+' · '+money(i.price)+' each</p><div class="cart-row-actions"><button class="qty-btn" data-action="minus" data-index="'+n+'">−</button><b>'+i.qty+'</b><button class="qty-btn" data-action="plus" data-index="'+n+'">＋</button><button class="remove-btn" data-action="remove" data-index="'+n+'">Remove</button></div></div><strong>'+money(i.price*i.qty)+'</strong></div>').join("");
- itemsEl.querySelectorAll("[data-action]").forEach(b=>b.addEventListener("click",()=>{
-  const n=Number(b.dataset.index),act=b.dataset.action;
-  if(act==="plus")cart[n].qty++;if(act==="minus")cart[n].qty--;
-  if(act==="remove"||cart[n].qty<=0)cart.splice(n,1);save();
+ itemsEl.innerHTML=cart.map((item,n)=>{
+  const itemMrp=Number(item.mrp)||item.price;
+  const image=item.img||"https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=240";
+  return '<div class="cart-row"><img class="cart-thumb" src="'+escapeHTML(image)+'" alt="'+escapeHTML(item.name)+'"><div class="cart-product-details"><h3>'+escapeHTML(item.name)+'</h3><p>UK '+escapeHTML(item.size)+' · '+money(item.price)+' each <del>'+money(itemMrp)+'</del></p><div class="cart-row-actions"><button class="qty-btn" data-action="minus" data-index="'+n+'" aria-label="Decrease quantity">−</button><b>'+item.qty+'</b><button class="qty-btn" data-action="plus" data-index="'+n+'" aria-label="Increase quantity">＋</button><button class="remove-btn" data-action="remove" data-index="'+n+'">Remove</button></div></div><strong>'+money(item.price*item.qty)+'<small class="cart-line-saving">Save '+money((itemMrp-item.price)*item.qty)+'</small></strong></div>';
+ }).join("");
+ itemsEl.querySelectorAll("[data-action]").forEach(button=>button.addEventListener("click",()=>{
+  const n=Number(button.dataset.index),action=button.dataset.action;
+  if(!cart[n])return;
+  if(action==="plus")cart[n].qty=Math.min(99,cart[n].qty+1);
+  if(action==="minus")cart[n].qty--;
+  if(action==="remove"||cart[n].qty<=0)cart.splice(n,1);
+  save();
  }));
 }
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -97,7 +109,7 @@ grid.addEventListener("click",e=>{
  const card=btn.closest(".product-card"),size=card.querySelector(".size-select").value;
  if(!size){card.querySelector(".size-select").focus();toast("Please select your size first");return}
  const id=btn.dataset.id,found=cart.find(i=>i.id===id&&i.size===size);
- if(found)found.qty++;else cart.push({id,name:btn.dataset.name,price:Number(btn.dataset.price),size,qty:1});
+ if(found)found.qty++;else cart.push({id,name:btn.dataset.name,price:Number(btn.dataset.price),mrp:Number(btn.dataset.mrp)||Number(btn.dataset.price),img:btn.dataset.image||card.querySelector("img").src,size,qty:1});
  save();toast(btn.dataset.name+" added to cart");openCart();
 });
 function updateDeliveryStatus(){
