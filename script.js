@@ -60,6 +60,10 @@ filters.forEach(btn=>btn.addEventListener("click",()=>{
 
 const drawer=document.getElementById("cartDrawer"),backdrop=document.getElementById("cartBackdrop"),itemsEl=document.getElementById("cartItems"),countEl=document.getElementById("cartCount"),drawerCount=document.getElementById("drawerCount"),subtotalEl=document.getElementById("cartSubtotal"),checkout=document.getElementById("checkoutWhatsApp");
 const deliveryForm=document.getElementById("deliveryForm"),citySelect=document.getElementById("deliveryCity"),deliveryStatus=document.getElementById("deliveryStatus"),placeOrder=document.getElementById("placeOrder");
+let orderMode="delivery";
+const STORE_ADDRESS="Ke Pass, Tehsil Rd, Man Market, SBI ATM Ke Pass, Bus Stand Rd, Nokha, Rajasthan 334803";
+const modeButtons=[...document.querySelectorAll("[data-order-mode]")];
+modeButtons.forEach(btn=>btn.addEventListener("click",()=>{orderMode=btn.dataset.orderMode;modeButtons.forEach(b=>{const active=b===btn;b.classList.toggle("active",active);b.setAttribute("aria-pressed",String(active))});document.getElementById("formHeading").textContent=orderMode==="pickup"?"Store pickup details":"Delivery details";document.getElementById("formIntro").textContent=orderMode==="pickup"?"Apni details bharein. Order ready hone par WhatsApp confirmation milega.":"Apna delivery address bharein. Store team WhatsApp par confirm karegi.";if(orderMode==="pickup"){citySelect.value="Nokha";deliveryForm.elements.pincode.value="334803";deliveryStatus.textContent="✓ Store pickup selected. Collect from MARUDER Shoes Store, Nokha. Please wait for confirmation before visiting.";deliveryStatus.className="delivery-status available";placeOrder.disabled=false;}else{citySelect.value="";deliveryForm.elements.pincode.value="";updateDeliveryStatus();}}));
 const SERVICE_CITIES=["nokha","bikaner","nagaur","dungargarh","bajju"];
 let cart=[];try{cart=JSON.parse(localStorage.getItem("maruderCart")||"[]")}catch{cart=[]}
 const money=n=>"₹"+Number(n).toLocaleString("en-IN");
@@ -99,23 +103,34 @@ grid.addEventListener("click",e=>{
 function updateDeliveryStatus(){
  const city=(citySelect.value||"").trim().toLowerCase();
  const pin=deliveryForm.elements.pincode.value.trim();
+ if(orderMode==="pickup"){
+  deliveryStatus.textContent="✓ Store pickup selected. Collect from MARUDER Shoes Store, Nokha, Rajasthan 334803. Please wait for WhatsApp confirmation.";
+  deliveryStatus.className="delivery-status available";placeOrder.disabled=false;return;
+ }
  const available=SERVICE_CITIES.includes(city);
  if(!city){deliveryStatus.textContent="City select karte hi delivery status dikhega.";deliveryStatus.className="delivery-status";placeOrder.disabled=true;return}
  if(!available){deliveryStatus.textContent="✕ Is city mein abhi delivery available nahi hai.";deliveryStatus.className="delivery-status unavailable";placeOrder.disabled=true;return}
  if(pin.length===6&&!/^\d{6}$/.test(pin)){deliveryStatus.textContent="PIN Code 6 digits ka hona chahiye.";deliveryStatus.className="delivery-status unavailable";placeOrder.disabled=true;return}
  deliveryStatus.textContent="✓ "+citySelect.value+" mein delivery available hai. PIN code courier team se confirm hoga.";
- deliveryStatus.className="delivery-status available";
- placeOrder.disabled=false;
+ deliveryStatus.className="delivery-status available";placeOrder.disabled=false;
 }
 citySelect.addEventListener("change",updateDeliveryStatus);
 deliveryForm.elements.pincode.addEventListener("input",updateDeliveryStatus);
+function createOrderId(){
+ const date=new Date(),stamp=[date.getFullYear().toString().slice(-2),String(date.getMonth()+1).padStart(2,"0"),String(date.getDate()).padStart(2,"0")].join("");
+ const bytes=new Uint8Array(4);if(window.crypto&&crypto.getRandomValues)crypto.getRandomValues(bytes);else for(let i=0;i<4;i++)bytes[i]=Math.floor(Math.random()*256);
+ return "MRD-"+stamp+"-"+Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("").toUpperCase();
+}
 deliveryForm.addEventListener("submit",e=>{
  e.preventDefault();if(!cart.length)return;
- const fd=new FormData(deliveryForm),name=String(fd.get("customerName")).trim(),phone=String(fd.get("phone")).trim(),address=String(fd.get("address")).trim(),city=String(fd.get("city")).trim(),pin=String(fd.get("pincode")).trim();
- if(!name||!/^[6-9]\d{9}$/.test(phone)||!address||!SERVICE_CITIES.includes(city.toLowerCase())||!/^\d{6}$/.test(pin)){toast("Please check all delivery details");updateDeliveryStatus();return}
+ const fd=new FormData(deliveryForm),name=String(fd.get("customerName")).trim(),phone=String(fd.get("phone")).trim(),address=String(fd.get("address")).trim(),city=String(fd.get("city")).trim(),pin=String(fd.get("pincode")).trim(),accepted=fd.get("acceptTerms")==="on";
+ const cityOK=orderMode==="pickup"||SERVICE_CITIES.includes(city.toLowerCase());
+ if(!name||!/^[6-9]\d{9}$/.test(phone)||!address||!cityOK||!/^\\d{6}$/.test(pin)||!accepted){toast("Please check details and accept store policies");updateDeliveryStatus();return}
+ const orderId=createOrderId();
  const lines=cart.map(i=>"• "+i.name+" | Size "+i.size+" | Qty "+i.qty+" | "+money(i.price*i.qty)).join("\n");
  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
- const msg="Namaste MARUDER Shoes Store! Mujhe ye order place karna hai.\n\nCUSTOMER DETAILS\nName: "+name+"\nMobile: "+phone+"\nAddress: "+address+"\nCity: "+city+"\nPIN Code: "+pin+"\n\nORDER ITEMS\n"+lines+"\n\nIndicative subtotal: "+money(total)+"\n\nKripya stock, exact model, final price, delivery charge aur PIN-level serviceability confirm karein. Dhanyavaad.";
+ const fulfilment=orderMode==="pickup"?"STORE PICKUP":"HOME DELIVERY";
+ const msg="Namaste MARUDER Shoes Store! Mujhe ye order place karna hai.\n\nORDER ID: "+orderId+"\nORDER TYPE: "+fulfilment+"\n\nCUSTOMER DETAILS\nName: "+name+"\nMobile: "+phone+"\nAddress / Pickup note: "+address+"\nCity: "+city+"\nPIN Code: "+pin+"\n\n"+(orderMode==="pickup"?"PICKUP LOCATION\n"+STORE_ADDRESS+"\nPlease confirm when the order is ready.\n":"DELIVERY AREA\nPlease confirm PIN-level serviceability and expected delivery date.\n")+"\nORDER ITEMS\n"+lines+"\n\nIndicative subtotal: "+money(total)+"\n\nCustomer has accepted the Terms & Conditions and 7-day Return & Exchange Policy shown on the website. Please confirm stock, exact model, final price and any delivery charges. Dhanyavaad.";
  openWhatsApp(msg);
 });
 document.getElementById("year").textContent=new Date().getFullYear();
